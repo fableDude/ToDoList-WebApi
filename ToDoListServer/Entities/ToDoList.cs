@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 namespace ToDoListServer.Entities
 {
     public record ToDoList(
-        Guid id, 
+        int id, 
         string caption, 
         string description, 
-        string image, 
-        string color, 
+        string image,
+        string color,
         ToDoItem[] items
         );
 }

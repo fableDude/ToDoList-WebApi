@@ -9,23 +9,23 @@ using System.Text;
 
 namespace ToDoListServer.Services
 {
-    public class DataService
+    public class DataService : IDataService
     {
         private const string _path = "http://localhost:3000/";
         static readonly HttpClient client = new HttpClient();
 
         public async Task<IEnumerable<ToDoList>> GetAllLists()
         {
-            var res = await client.GetAsync(_path+"lists");
+            var res = await client.GetAsync(_path + "lists");
             res.EnsureSuccessStatusCode();
             var resp = await res.Content.ReadAsStringAsync();
             var lists = JsonConvert.DeserializeObject<ToDoList[]>(resp);
             return lists;
         }
 
-        public async Task<ToDoList> GetListById(Guid id)
+        public async Task<ToDoList> GetListById(int id)
         {
-            var res = await client.GetAsync(_path + "lists/"+id);
+            var res = await client.GetAsync(_path + "lists/" + id);
             res.EnsureSuccessStatusCode();
             var resp = await res.Content.ReadAsStringAsync();
             var list = JsonConvert.DeserializeObject<ToDoList>(resp);
@@ -41,9 +41,9 @@ namespace ToDoListServer.Services
             return items;
         }
 
-        public async Task<IEnumerable<ToDoItem>> GetListItems(Guid listId)
+        public async Task<IEnumerable<ToDoItem>> GetListItems(int listId)
         {
-            var res = await client.GetAsync(_path + "items?listId="+listId);
+            var res = await client.GetAsync(_path + "items?listId=" + listId);
             res.EnsureSuccessStatusCode();
             var resp = await res.Content.ReadAsStringAsync();
             var items = JsonConvert.DeserializeObject<ToDoItem[]>(resp);
@@ -62,12 +62,12 @@ namespace ToDoListServer.Services
 
         }
 
-        public async Task<ToDoList> EditList(Guid listId,ToDoList list)
+        public async Task<ToDoList> EditList(int listId, ToDoList list)
         {
             var json = JsonConvert.SerializeObject(list);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var res = await client.PostAsync(_path + "lists/"+listId, data);
+            var res = await client.PostAsync(_path + "lists/" + listId, data);
             var resp = await res.Content.ReadAsStringAsync();
             var newList = JsonConvert.DeserializeObject<ToDoList>(resp);
             return newList;
@@ -84,15 +84,15 @@ namespace ToDoListServer.Services
             return newList;
         }
 
-        public async Task<HttpResponseMessage> DeleteList(Guid listId)
+        public async Task<HttpResponseMessage> DeleteList(int listId)
         {
             await client.DeleteAsync(_path + "items?listId=" + listId);
-            return await client.DeleteAsync(_path + "lists/" + listId); 
+            return await client.DeleteAsync(_path + "lists/" + listId);
         }
 
-        public async Task<HttpResponseMessage> CheckItem(Guid itemId)
+        public async Task<HttpResponseMessage> CheckItem(int itemId)
         {
-            var data = new StringContent("isComplited=true", Encoding.UTF8, "application/json");
+            var data = new StringContent("isComplited: true", Encoding.UTF8, "application/json");
             var res = await client.PatchAsync(_path + "items/" + itemId, data);
             return res;
         }

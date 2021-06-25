@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 namespace ToDoListServer.Entities
 {
     public record ToDoItem(
-        Guid id,
+        int id,
         string caption,
-        Guid listId,
+        int listId,
         Boolean isCompleted,
-        ToDoList list)
-        ;
+        ToDoList list
+        );
 }
