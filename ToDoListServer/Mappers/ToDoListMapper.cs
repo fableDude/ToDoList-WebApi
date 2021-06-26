@@ -13,11 +13,11 @@ namespace ToDoListServer.Mappers
         {
             ToDoListDto dto = new ToDoListDto
             (
-                id : list.id,
-                caption : list.caption,
-                description : list.description,
-                image : list.image,
-                color : list.color
+                id : list.Id,
+                caption : list.Caption,
+                description : list.Description,
+                image : list.Image,
+                color : list.Color
             );
 
             return dto;

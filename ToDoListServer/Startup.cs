@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ToDoListServer.Services;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace ToDoListServer
@@ -19,7 +20,6 @@ namespace ToDoListServer
     public class Startup
     {
         readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-        readonly string MyAllowAllHeadersPolicy = "_myallowallheaderspolicy";
 
         public Startup(IConfiguration configuration)
         {
@@ -31,6 +31,7 @@ namespace ToDoListServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<SqlDataContext>(options => options.UseSqlServer("name=ConnectionStrings:sqlServer"));
 
             services.AddCors(options =>
             {
@@ -46,7 +47,7 @@ namespace ToDoListServer
             });
 
 
-            services.AddSingleton<IDataService, DataService>();
+            services.AddScoped<IDataService, SqlDataService>();
             services.AddControllers().AddNewtonsoftJson();
             services.AddSwaggerGen(c =>
             {

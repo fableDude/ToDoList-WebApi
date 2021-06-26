@@ -53,7 +53,7 @@ namespace ToDoListServer.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ToDoItemDto>> AddNewItem(ToDoItemDto item)
+        public async Task<ActionResult<ToDoItemDto>> AddNewItem(ToDoItem item)
         {
             var res = await _service.AddNewItem(item);
             var response = ToDoItemMapper.Map(res);

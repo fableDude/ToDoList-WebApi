@@ -46,7 +46,7 @@ namespace ToDoListServer.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ToDoListDto>> AddNewList([FromBody] ToDoListDto newList)
+        public async Task<ActionResult<ToDoListDto>> AddNewList([FromBody] ToDoList newList)
         {
             var res = await _service.AddNewList(newList);
             var response = ToDoListMapper.Map(res);
@@ -54,7 +54,7 @@ namespace ToDoListServer.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult<ToDoListDto>> EditList(int id,[FromBody] ToDoListDto newList)
+        public async Task<ActionResult<ToDoListDto>> EditList(int id,[FromBody] ToDoList newList)
         {
             var res = await _service.EditList(id,newList);
             var response = ToDoListMapper.Map(res);
@@ -62,10 +62,10 @@ namespace ToDoListServer.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteList(int id)
+        public async Task DeleteList(int id)
         {
-            var res = await _service.DeleteList(id);
-            return Ok(res);
+            await _service.DeleteList(id);
+            return ;
         }
 
     }

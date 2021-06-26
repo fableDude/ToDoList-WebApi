@@ -5,12 +5,19 @@ using System.Threading.Tasks;
 
 namespace ToDoListServer.Entities
 {
-    public record ToDoList(
-        int id, 
-        string caption, 
-        string description, 
-        string image,
-        string color,
-        ToDoItem[] items
-        );
+    public class ToDoList
+    {
+        public int Id { get; set; }
+        public string Caption { get; set; }
+        public string Description { get; set; }
+        public string Image { get; set; }
+        public string Color { get; set; }
+        public List<ToDoItem> Items { get; set; }
+
+        public ToDoList()
+        {
+            Items = new ();
+        }
+    }
+    
 }

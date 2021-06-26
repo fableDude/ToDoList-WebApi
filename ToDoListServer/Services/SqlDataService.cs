@@ -1,8 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using ToDoListServer.Entities;
 using ToDoListServer.Models.Dtos;
@@ -16,44 +19,61 @@ namespace ToDoListServer.Services
         {
             _sqlDataContext = sqlDataContext;
         }
-        public Task<ToDoItem> AddNewItem(ToDoItemDto item)
+        public async Task<ToDoItem> AddNewItem(ToDoItem item)
         {
-            throw new NotImplementedException();
+            var res = await _sqlDataContext.ToDoItems.AddAsync(item);
+            await _sqlDataContext.SaveChangesAsync();
+            return res.Entity;
         }
 
-        public Task<ToDoList> AddNewList(ToDoListDto list)
+        public async Task<ToDoList> AddNewList(ToDoList list)
         {
-            throw new NotImplementedException();
+            var res = await _sqlDataContext.ToDoLists.AddAsync(list);
+            await _sqlDataContext.SaveChangesAsync();
+            return res.Entity;
         }
 
-        public Task<ToDoItem> CheckItem(int itemId)
+        public async Task<ToDoItem> CheckItem(int itemId)
         {
-            throw new NotImplementedException();
+            var existingItem = _sqlDataContext.ToDoItems.Where(item => item.Id == itemId).First();
+            var obj = new JsonPatchDocument<ToDoItem>().Replace(o => o.IsCompleted, true);
+            obj.ApplyTo(existingItem);
+            var res = _sqlDataContext.ToDoItems.Update(existingItem);
+            await _sqlDataContext.SaveChangesAsync();
+            return res.Entity;
         }
 
         public Task<int> CountActiveItems()
         {
-            throw new NotImplementedException();
+            var count = _sqlDataContext.ToDoItems.Where(item => item.IsCompleted == false).Count();
+            return Task.FromResult(count);
         }
 
         public Task<int> CountItems()
         {
-            throw new NotImplementedException();
+            var count = _sqlDataContext.ToDoItems.Count();
+            return Task.FromResult(count);
         }
 
-        public Task<int> CountLists()
+        public  Task<int> CountLists()
         {
-            throw new NotImplementedException();
+            var count = _sqlDataContext.ToDoLists.Count();
+            return Task.FromResult(count);
         }
 
-        public Task<HttpResponseMessage> DeleteList(int listId)
+        public async Task DeleteList(int listId)
         {
-            throw new NotImplementedException();
+            _sqlDataContext.ToDoItems.RemoveRange(_sqlDataContext.ToDoItems.Where(item => item.ListId == listId));
+            _sqlDataContext.ToDoLists.Remove(_sqlDataContext.ToDoLists.Where(list => list.Id == listId).First());
+            await _sqlDataContext.SaveChangesAsync();
+            return;
         }
 
-        public Task<ToDoList> EditList(int listId, ToDoListDto list)
+        public async Task<ToDoList> EditList(int listId, ToDoList list)
         {
-            throw new NotImplementedException();
+            var res =_sqlDataContext.ToDoLists.Update(list);
+            await _sqlDataContext.SaveChangesAsync();
+            return res.Entity;
         }
 
         public async Task<IEnumerable<ToDoItem>> GetAllItems()
@@ -68,14 +88,16 @@ namespace ToDoListServer.Services
             return lists;
         }
 
-        public Task<ToDoList> GetListById(int id)
+        public  Task<ToDoList> GetListById(int id)
         {
-            throw new NotImplementedException();
+            var lists =  _sqlDataContext.ToDoLists.Where(list => list.Id == id).First();
+            return Task.FromResult(lists);
         }
 
-        public Task<IEnumerable<ToDoItem>> GetListItems(int listId)
+        public async Task<IEnumerable<ToDoItem>> GetListItems(int listId)
         {
-            throw new NotImplementedException();
+            var items = await  _sqlDataContext.ToDoItems.Where(item => item.ListId == listId).ToListAsync();
+            return items;
         }
     }
 }

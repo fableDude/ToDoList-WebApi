@@ -13,10 +13,10 @@ namespace ToDoListServer.Mappers
         {
             ToDoItemDto dto = new ToDoItemDto
             (
-                id: item.id,
-                caption: item.caption,
-                listId: item.listId,
-                isCompleted: item.isCompleted
+                id: item.Id,
+                caption: item.Caption,
+                listId: item.ListId,
+                isCompleted: item.IsCompleted
             );
 
             return dto;

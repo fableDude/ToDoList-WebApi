@@ -10,14 +10,14 @@ namespace ToDoListServer.Services
 {
     public interface IDataService
     {
-        Task<ToDoItem> AddNewItem(ToDoItemDto item);
-        Task<ToDoList> AddNewList(ToDoListDto list);
+        Task<ToDoItem> AddNewItem(ToDoItem item);
+        Task<ToDoList> AddNewList(ToDoList list);
         Task<ToDoItem> CheckItem(int itemId);
         Task<int> CountActiveItems();
         Task<int> CountItems();
         Task<int> CountLists();
-        Task<HttpResponseMessage> DeleteList(int listId);
-        Task<ToDoList> EditList(int listId, ToDoListDto list);
+        Task DeleteList(int listId);
+        Task<ToDoList> EditList(int listId, ToDoList list);
         Task<IEnumerable<ToDoItem>> GetAllItems();
         Task<IEnumerable<ToDoList>> GetAllLists();
         Task<ToDoList> GetListById(int id);

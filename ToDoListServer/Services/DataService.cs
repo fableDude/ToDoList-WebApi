@@ -68,7 +68,7 @@ namespace ToDoListServer.Services
             return items;
         }
 
-        public async Task<ToDoItem> AddNewItem(ToDoItemDto item)
+        public async Task<ToDoItem> AddNewItem(ToDoItem item)
         {
             var json = JsonConvert.SerializeObject(item);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
@@ -80,7 +80,7 @@ namespace ToDoListServer.Services
 
         }
 
-        public async Task<ToDoList> EditList(int listId, ToDoListDto list)
+        public async Task<ToDoList> EditList(int listId, ToDoList list)
         {
             var json = JsonConvert.SerializeObject(list);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
@@ -91,7 +91,7 @@ namespace ToDoListServer.Services
             return newList;
         }
 
-        public async Task<ToDoList> AddNewList(ToDoListDto list)
+        public async Task<ToDoList> AddNewList(ToDoList list)
         {
             var json = JsonConvert.SerializeObject(list);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
@@ -102,16 +102,17 @@ namespace ToDoListServer.Services
             return newList;
         }
 
-        public async Task<HttpResponseMessage> DeleteList(int listId)
+        public async Task DeleteList(int listId)
         {
             await client.DeleteAsync(_path + "items?listId=" + listId);
-            return await client.DeleteAsync(_path + "lists/" + listId);
+            await client.DeleteAsync(_path + "lists/" + listId);
+            return ;
         }
 
         public async Task<ToDoItem> CheckItem(int itemId)
         {
             var existingItem = await GetItemById(itemId);
-            var obj = new JsonPatchDocument<ToDoItem>().Replace(o => o.isCompleted, true);
+            var obj = new JsonPatchDocument<ToDoItem>().Replace(o => o.IsCompleted, true);
             obj.ApplyTo(existingItem);
             var stringify = JsonConvert.SerializeObject(existingItem);
             var data = new StringContent(stringify, Encoding.UTF8, "application/json");
@@ -131,7 +132,7 @@ namespace ToDoListServer.Services
         {
             var res = await GetAllItems();
             return res
-                    .Where(item => item.isCompleted == false)
+                    .Where(item => item.IsCompleted == false)
                     .Count();
         }
 

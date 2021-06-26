@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace ToDoListServer.Entities
 {
-    public record ToDoItem(
-        int id,
-        string caption,
-        int listId,
-        bool isCompleted,
-        ToDoList list
-        );
+    public class ToDoItem {
+        public int Id { get; set; }
+        public string Caption { get; set; }
+        public int ListId{ get; set; }
+        public bool IsCompleted{ get; set; }
+        public ToDoList List{ get; set; }
+    }
 }
