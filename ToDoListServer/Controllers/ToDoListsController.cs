@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ToDoListServer.Entities;
+using ToDoListServer.Mappers;
+using ToDoListServer.Models.Dtos;
 using ToDoListServer.Services;
 
 namespace ToDoListServer.Controllers
 {
-    [Route("lists")]
+    [Route("[controller]")]
     [ApiController]
     public class ToDoListsController : ControllerBase
     {
@@ -20,31 +22,43 @@ namespace ToDoListServer.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ToDoList>>> GetAllLists()
+        public async Task<ActionResult<List<ToDoListDto>>> GetAllLists()
         {
-            IEnumerable<ToDoList> res = await _service.GetAllLists();
-            return Ok(res);
+            var res = await _service.GetAllLists();
+            var response = res.Select(list => ToDoListMapper.Map(list)).ToList();
+            return Ok(response);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ToDoList>> GetListById(int id)
+        public async Task<ActionResult<ToDoListDto>> GetListById(int id)
         {
-            ToDoList res = await _service.GetListById(id);
+            var res = await _service.GetListById(id);
+            var response = ToDoListMapper.Map(res);
+            return Ok(response);
+        }
+
+        [HttpGet("count")]
+        public async Task<ActionResult<int>> GetListsCount()
+        {
+            var res = await _service.CountLists();
             return Ok(res);
+
         }
 
         [HttpPost]
-        public async Task<ToDoList> AddNewList([FromBody]ToDoList newList)
+        public async Task<ActionResult<ToDoListDto>> AddNewList([FromBody] ToDoListDto newList)
         {
-            ToDoList res = await _service.AddNewList(newList);
-            return res;
+            var res = await _service.AddNewList(newList);
+            var response = ToDoListMapper.Map(res);
+            return Ok(response);
         }
 
         [HttpPatch("{id}")]
-        public async Task<ToDoList> EditList(int id,[FromBody] ToDoList newList)
+        public async Task<ActionResult<ToDoListDto>> EditList(int id,[FromBody] ToDoListDto newList)
         {
-            ToDoList res = await _service.EditList(id,newList);
-            return res;
+            var res = await _service.EditList(id,newList);
+            var response = ToDoListMapper.Map(res);
+            return Ok(response);
         }
 
         [HttpDelete("{id}")]

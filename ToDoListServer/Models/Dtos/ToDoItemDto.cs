@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ToDoListServer.Entities
+namespace ToDoListServer.Models.Dtos
 {
-    public record ToDoItem(
+    public record ToDoItemDto
+    (
         int id,
         string caption,
         int listId,
-        bool isCompleted,
-        ToDoList list
-        );
+        bool isCompleted
+    );
 }

@@ -6,13 +6,21 @@ using System.Threading.Tasks;
 using ToDoListServer.Entities;
 using Newtonsoft.Json;
 using System.Text;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.Extensions.Configuration;
+using ToDoListServer.Models.Dtos;
 
 namespace ToDoListServer.Services
 {
     public class DataService : IDataService
     {
-        private const string _path = "http://localhost:3000/";
+        private string _path;
         static readonly HttpClient client = new HttpClient();
+
+        public DataService(IConfiguration configuration)
+        {
+            _path = configuration["serverUrl"];
+        }
 
         public async Task<IEnumerable<ToDoList>> GetAllLists()
         {
@@ -20,7 +28,7 @@ namespace ToDoListServer.Services
             res.EnsureSuccessStatusCode();
             var resp = await res.Content.ReadAsStringAsync();
             var lists = JsonConvert.DeserializeObject<ToDoList[]>(resp);
-            return lists;
+            return  lists;
         }
 
         public async Task<ToDoList> GetListById(int id)
@@ -31,6 +39,16 @@ namespace ToDoListServer.Services
             var list = JsonConvert.DeserializeObject<ToDoList>(resp);
             return list;
         }
+
+        public async Task<ToDoItem> GetItemById(int id)
+        {
+            var res = await client.GetAsync(_path + "items/" + id);
+            res.EnsureSuccessStatusCode();
+            var resp = await res.Content.ReadAsStringAsync();
+            var item = JsonConvert.DeserializeObject<ToDoItem>(resp);
+            return item;
+        }
+
 
         public async Task<IEnumerable<ToDoItem>> GetAllItems()
         {
@@ -50,7 +68,7 @@ namespace ToDoListServer.Services
             return items;
         }
 
-        public async Task<ToDoItem> AddNewItem(ToDoItem item)
+        public async Task<ToDoItem> AddNewItem(ToDoItemDto item)
         {
             var json = JsonConvert.SerializeObject(item);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
@@ -62,18 +80,18 @@ namespace ToDoListServer.Services
 
         }
 
-        public async Task<ToDoList> EditList(int listId, ToDoList list)
+        public async Task<ToDoList> EditList(int listId, ToDoListDto list)
         {
             var json = JsonConvert.SerializeObject(list);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var res = await client.PostAsync(_path + "lists/" + listId, data);
+            var res = await client.PatchAsync(_path + "lists/" + listId, data);
             var resp = await res.Content.ReadAsStringAsync();
             var newList = JsonConvert.DeserializeObject<ToDoList>(resp);
             return newList;
         }
 
-        public async Task<ToDoList> AddNewList(ToDoList list)
+        public async Task<ToDoList> AddNewList(ToDoListDto list)
         {
             var json = JsonConvert.SerializeObject(list);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
@@ -90,11 +108,17 @@ namespace ToDoListServer.Services
             return await client.DeleteAsync(_path + "lists/" + listId);
         }
 
-        public async Task<HttpResponseMessage> CheckItem(int itemId)
+        public async Task<ToDoItem> CheckItem(int itemId)
         {
-            var data = new StringContent("isComplited: true", Encoding.UTF8, "application/json");
+            var existingItem = await GetItemById(itemId);
+            var obj = new JsonPatchDocument<ToDoItem>().Replace(o => o.isCompleted, true);
+            obj.ApplyTo(existingItem);
+            var stringify = JsonConvert.SerializeObject(existingItem);
+            var data = new StringContent(stringify, Encoding.UTF8, "application/json");
             var res = await client.PatchAsync(_path + "items/" + itemId, data);
-            return res;
+            var resp = await res.Content.ReadAsStringAsync();
+            var newItem= JsonConvert.DeserializeObject<ToDoItem>(resp);
+            return newItem;
         }
 
         public async Task<int> CountItems()
@@ -107,7 +131,7 @@ namespace ToDoListServer.Services
         {
             var res = await GetAllItems();
             return res
-                    .Where(item => item.isCompleted == true)
+                    .Where(item => item.isCompleted == false)
                     .Count();
         }
 

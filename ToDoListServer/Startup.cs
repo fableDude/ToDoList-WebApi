@@ -11,11 +11,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ToDoListServer.Services;
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
+
 
 namespace ToDoListServer
 {
     public class Startup
     {
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+        readonly string MyAllowAllHeadersPolicy = "_myallowallheaderspolicy";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -26,8 +31,23 @@ namespace ToDoListServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                                  builder =>
+                                  {
+                                      builder.WithOrigins("http://localhost:5000",
+                                                          "http://localhost:3000",
+                                                          "http://localhost:4200").AllowAnyHeader().AllowAnyMethod();
+                                      
+                                  });
+
+            });
+
+
             services.AddSingleton<IDataService, DataService>();
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ToDoListServer", Version = "v1" });
@@ -46,11 +66,13 @@ namespace ToDoListServer
 
             app.UseRouting();
 
+            app.UseCors(MyAllowSpecificOrigins);
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllers().RequireCors(MyAllowSpecificOrigins); ;
             });
         }
     }
