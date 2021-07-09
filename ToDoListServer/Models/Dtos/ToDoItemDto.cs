@@ -10,6 +10,7 @@ namespace ToDoListServer.Models.Dtos
         int id,
         string caption,
         int listId,
-        bool isCompleted
+        bool isCompleted,
+        string userId
     );
 }

@@ -13,6 +13,7 @@ namespace ToDoListServer.Entities
         public string Image { get; set; }
         public string Color { get; set; }
         public List<ToDoItem> Items { get; set; }
+        public string userId { get; set; }
 
         public ToDoList()
         {

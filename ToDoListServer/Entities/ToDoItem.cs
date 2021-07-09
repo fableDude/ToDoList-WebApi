@@ -11,5 +11,6 @@ namespace ToDoListServer.Entities
         public int ListId{ get; set; }
         public bool IsCompleted{ get; set; }
         public ToDoList List{ get; set; }
+        public string userId { get; set; }
     }
 }

@@ -11,6 +11,7 @@ namespace ToDoListServer.Models.Dtos
         string caption,
         string description,
         string image,
-        string color
+        string color,
+        string userId
     );
 }

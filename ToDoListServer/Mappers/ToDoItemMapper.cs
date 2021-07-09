@@ -16,7 +16,8 @@ namespace ToDoListServer.Mappers
                 id: item.Id,
                 caption: item.Caption,
                 listId: item.ListId,
-                isCompleted: item.IsCompleted
+                isCompleted: item.IsCompleted,
+                userId: item.userId
             );
 
             return dto;

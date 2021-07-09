@@ -17,7 +17,8 @@ namespace ToDoListServer.Mappers
                 caption : list.Caption,
                 description : list.Description,
                 image : list.Image,
-                color : list.Color
+                color : list.Color,
+                userId: list.userId
             );
 
             return dto;
