@@ -36,11 +36,9 @@ namespace ToDoListServer.Services
         public async Task<ToDoItem> CheckItem(int itemId)
         {
             var existingItem = _sqlDataContext.ToDoItems.Where(item => item.Id == itemId).First();
-            var obj = new JsonPatchDocument<ToDoItem>().Replace(o => o.IsCompleted, true);
-            obj.ApplyTo(existingItem);
-            var res = _sqlDataContext.ToDoItems.Update(existingItem);
+            existingItem.IsCompleted = true;
             await _sqlDataContext.SaveChangesAsync();
-            return res.Entity;
+            return existingItem;
         }
 
         public Task<int> CountActiveItems()
